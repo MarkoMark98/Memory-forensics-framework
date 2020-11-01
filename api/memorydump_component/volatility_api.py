@@ -10,12 +10,13 @@ from volatility.framework.interfaces.plugins import FileHandlerInterface
 from utils.parser import _type_renderers, PrintedProgress, file_handler_class_factory, process_unsatisfied_exceptions
 from typing import Dict, Type, Union, Any, List, Tuple
 
-dump_path = path.realpath('/media/sf_SharedFolder/dumps/2gb//memdump.mem')
+dump_path = path.realpath(r'C:/Users/Mark/Documents/SharedFolder/dumps/2gb/memdump.mem')
+print(dump_path)
 
 framework.require_interface_version(2, 0, 0)
 ctx = contexts.Context()
 config_path = interfaces.configuration.path_join('automagic', 'LayerStacker', 'single_location')
-ctx.config['automagic.LayerStacker.single_location'] = 'file://'+dump_path
+ctx.config['automagic.LayerStacker.single_location'] = 'file:'+dump_path
 
 unsatisfied = interfaces.plugins.PluginInterface.unsatisfied(ctx, config_path)
 
