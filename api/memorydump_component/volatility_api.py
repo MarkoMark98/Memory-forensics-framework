@@ -1,5 +1,5 @@
-from os import path
 import json
+from os import path
 import sys
 sys.path.append(path.abspath('../../../volatility3'))
 sys.path.append(path.abspath('../../'))
@@ -10,7 +10,7 @@ from volatility.framework.interfaces.plugins import FileHandlerInterface
 from utils.parser import _type_renderers, PrintedProgress, file_handler_class_factory, process_unsatisfied_exceptions
 from typing import Dict, Type, Union, Any, List, Tuple
 
-dump_path = '/media/sf_SharedFolder/dumps/2gb/memdump.mem'
+dump_path = path.realpath('/media/sf_SharedFolder/dumps/2gb//memdump.mem')
 
 framework.require_interface_version(2, 0, 0)
 ctx = contexts.Context()
