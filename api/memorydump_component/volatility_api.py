@@ -1,7 +1,7 @@
 from os import path
 import json
 import sys
-sys.path.append(path.abspath('../../volatility3'))
+sys.path.append(path.abspath('../../../volatility3'))
 sys.path.append(path.abspath('../../'))
 from volatility import framework
 from volatility.plugins.windows import pslist
