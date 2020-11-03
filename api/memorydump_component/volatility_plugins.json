@@ -1,0 +1,19 @@
+{
+  "windows": {
+    "pslist": "windows.pslist.PsList",
+    "pstree": "windows.pstree.PsTree",
+    "netscan": "windows.netscan.NetScan",
+    "filescan": "windows.filescan.FileScan",
+    "timeliner": "timeliner.Timeliner"
+  },
+  "mac": {
+    "pslist": "mac.pslist.PsList",
+    "pstree": "mac.pstree.PsTree",
+    "timeliner": "timeliner.Timeliner"
+  },
+  "linux": {
+    "pslist": "linux.pslist.PsList",
+    "pstree": "linux.pstree.PsTree",
+    "timeliner": "timeliner.Timeliner"
+  }
+}
