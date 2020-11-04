@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app
+from flask import Flask, Blueprint, current_app
 from flask_restful import Api, Resource
 import sys, json, os, requests, response
 from os import path
@@ -38,7 +38,8 @@ def run_plugin(os_name, plugin_name):
         progress_callback = PrintedProgress()
         constructed = plugins.construct_plugin(ctx, automagics, eval(current_app.config['plugins_list'][os_name][plugin_name]), config_path, progress_callback, file_handler_class_factory(dump_path))
     except exceptions.UnsatisfiedException as excp:
-                process_unsatisfied_exceptions(excp)
+                err_msg = process_unsatisfied_exceptions(excp)
+                return{"err_msg": err_msg}
     if constructed is not None:
         grid = constructed.run()
 
@@ -71,4 +72,6 @@ def run_plugin(os_name, plugin_name):
         else:
             grid.visit(node = None, function = visitor, initial_accumulator = final_output)
             
-    return {'data': final_output[0]}
+        return {'data': final_output[0]}
+    else:
+        return {'err-message':"Errore nella costruzione del plugin"+os_name+"."+plugin_name+". Controllare di aver inserito un file valido e non corrotto."}

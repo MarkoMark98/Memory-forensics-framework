@@ -194,6 +194,7 @@ def process_unsatisfied_exceptions(excp):
         """Provide useful feedback if an exception occurs during requirement fulfillment."""
         # Add a blank newline
         print("")
+        error_msg = ""
         translation_failed = False
         symbols_failed = False
         for config_path in excp.unsatisfied:
@@ -202,6 +203,7 @@ def process_unsatisfied_exceptions(excp):
             symbols_failed = symbols_failed or isinstance(excp.unsatisfied[config_path],
                                                           configuration.requirements.SymbolTableRequirement)
 
+            error_msg = "Unsatisfied requirement {}: {}".format(config_path, excp.unsatisfied[config_path].description)
             print("Unsatisfied requirement {}: {}".format(config_path, excp.unsatisfied[config_path].description))
 
         if symbols_failed:
@@ -214,3 +216,4 @@ def process_unsatisfied_exceptions(excp):
                   "\tA file was provided to create this layer (by -f, --single-location or by config)\n"
                   "\tThe file exists and is readable\n"
                   "\tThe necessary symbols are present and identified by volatility")
+        return error_msg
