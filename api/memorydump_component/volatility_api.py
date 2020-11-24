@@ -1,6 +1,6 @@
 from flask import Flask, Blueprint, current_app
 from flask_restful import Api, Resource
-import sys, json, os, requests, response
+import sys, json, os, response
 from os import path
 sys.path.append(path.abspath('../../volatility3'))
 import volatility
