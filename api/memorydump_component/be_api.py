@@ -13,4 +13,4 @@ def be_search():
     #Getting keywords from request body
     dt = request.json
     
-    return dt["keywords"]
+    return dt
