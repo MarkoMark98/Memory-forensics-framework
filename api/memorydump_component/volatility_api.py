@@ -22,7 +22,9 @@ with open(path.realpath(os.path.join(os.path.dirname(__file__), 'volatility_plug
 
 @volatility_api.route("/<os_name>/<plugin_name>")
 def run_plugin(os_name, plugin_name):
-    dump_path = current_app.config['dump_path']
+    
+    dump_path = os.environ.get("DUMP_PATH")
+    
     framework.require_interface_version(2, 0, 0)
     ctx = contexts.Context()
     config_path = interfaces.configuration.path_join('automagic', 'LayerStacker', 'single_location')
