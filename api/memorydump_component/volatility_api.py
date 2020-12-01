@@ -14,8 +14,6 @@ sys.path.append(path.abspath('../'))
 from utils.parser import _type_renderers, PrintedProgress, file_handler_class_factory, process_unsatisfied_exceptions
 from typing import Dict, Type, Union, Any, List, Tuple
 
-dump_path = path.realpath(r'C:/Users/Mark/Documents/SharedFolder/dumps/2gb/memdump.mem')
-
 volatility_api = Blueprint('volatility_api', __name__,  static_folder="static")
 
 with open(path.realpath('memorydump_component/volatility_plugins.json'), 'r') as json_file:
@@ -24,6 +22,7 @@ with open(path.realpath('memorydump_component/volatility_plugins.json'), 'r') as
 
 @volatility_api.route("/<os_name>/<plugin_name>")
 def run_plugin(os_name, plugin_name):
+    dump_path = current_app.config['dump_path']
     framework.require_interface_version(2, 0, 0)
     ctx = contexts.Context()
     config_path = interfaces.configuration.path_join('automagic', 'LayerStacker', 'single_location')
