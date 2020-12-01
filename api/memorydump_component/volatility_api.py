@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, current_app
 from flask_restful import Api, Resource
 import sys, json, os, response
 from os import path
-sys.path.append(path.abspath('../../volatility3'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../volatility3'))
 import volatility
 from volatility.plugins import windows, mac, linux
 from volatility.plugins.windows import pslist, pstree, filescan, netscan
@@ -10,13 +10,13 @@ from volatility.plugins.mac import pslist, pstree
 from volatility.plugins.linux import pslist, pstree
 from volatility import framework
 from volatility.framework import contexts, automagic, exceptions, plugins, interfaces
-sys.path.append(path.abspath('../'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
 from utils.parser import _type_renderers, PrintedProgress, file_handler_class_factory, process_unsatisfied_exceptions
 from typing import Dict, Type, Union, Any, List, Tuple
 
 volatility_api = Blueprint('volatility_api', __name__,  static_folder="static")
 
-with open(path.realpath('memorydump_component/volatility_plugins.json'), 'r') as json_file:
+with open(path.realpath(os.path.join(os.path.dirname(__file__), 'volatility_plugins.json')), 'r') as json_file:
     current_app.config['plugins_list'] = json.load(json_file)
 
 
