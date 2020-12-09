@@ -28,7 +28,9 @@ def be_search():
     command = f"bulk_extractor -o {destination} {dump_path}"
     #os.system(command)
 
+    #result dictionary
     result = {}
+    
     #Getting keywords from request body
     #the keywords must be equal to teh file names
     keywords = request.json
