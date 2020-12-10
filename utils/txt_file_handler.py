@@ -1,5 +1,5 @@
 import re
-from collections import Counter
+from mmap import mmap, PROT_READ
 
 def get_occurence_number(matches):
     '''
@@ -38,3 +38,11 @@ def find_occurrences(path,keywords):
         result[keyword] = get_occurence_number(total)
 
     return result
+
+
+def strings(fname, keyword):
+        with open(fname, 'rb') as f, mmap(f.fileno(), 0, prot=PROT_READ) as m:
+            for match in re.finditer((rf"([^\s]*{keyword}[^\s]*)").encode(), m):
+                yield match.group(0)
+    
+    

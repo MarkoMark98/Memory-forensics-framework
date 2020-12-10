@@ -5,6 +5,7 @@ import json
 from utils import pcap_handler as pcap
 from utils import txt_file_handler as tfh
 
+
 be_api = Blueprint('be_api', __name__,  static_folder="static")
 
 '''
@@ -46,3 +47,10 @@ def be_search():
     result["packets"] = packets
 
     return result
+
+
+@be_api.route("/strings/<keyword>",methods=["GET"])
+def memdump_search(keyword):
+    dump_path = os.environ.get('DUMP_PATH')
+    matches = tfh.strings(dump_path,keyword)
+    return [match for match in matches]
