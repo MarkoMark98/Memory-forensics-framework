@@ -40,9 +40,9 @@ def find_occurrences(path,keywords):
     return result
 
 
-def strings(fname, keyword):
-        with open(fname, 'rb') as f, mmap(f.fileno(), 0, prot=PROT_READ) as m:
-            for match in re.finditer((rf"([^\s]*{keyword}[^\s]*)").encode(), m):
-                yield match.group(0)
+def strings(fname, n=6):
+    with open(fname, 'rb') as f, mmap(f.fileno(), 0, prot=PROT_READ) as m:
+        for match in re.finditer(('([\w/]{%s}[\w/]*)' % n).encode(), m):
+            yield match.group(0)
     
     
