@@ -49,11 +49,16 @@ def be_search():
     return result
 
 
-@be_api.route("/strings/<keyword>",methods=["GET"])
-def memdump_search(keyword):
-    res = []
+@be_api.route("/strings",methods=["POST"])
+def memdump_search():
+
+    keyword = request.json["keyword"]
+
+    temp = []
     dump_path = os.environ.get('DUMP_PATH')
     strings = tfh.strings(dump_path)
+
     for word in strings:
-        res.append(str(word))
-    return {"strings":res}
+        temp.append(str(word))
+
+    return {keyword : tfh.find_matching_strings(temp,keyword)}

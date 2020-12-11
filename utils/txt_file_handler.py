@@ -15,7 +15,22 @@ def get_occurence_number(matches):
         result[keyword] = num
     
     return result
-    
+
+def find_matching_strings(strings,keyword):
+
+    regex = rf"[^\s]*{keyword}[^\s]*"
+    pattern = re.compile(regex)
+
+    res = []
+
+    for string in strings:
+        matches = re.findall(pattern,string)
+        if matches != None:
+            res = res + matches
+            
+    return res
+
+
 
 def find_occurrences(path,keywords):
     
