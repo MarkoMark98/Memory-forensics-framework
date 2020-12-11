@@ -51,9 +51,9 @@ def be_search():
 
 @be_api.route("/strings/<keyword>",methods=["GET"])
 def memdump_search(keyword):
+    res = []
     dump_path = os.environ.get('DUMP_PATH')
     strings = tfh.strings(dump_path)
-    for string in strings:
-        print(string)
-
-    return {"strings":[string for string in strings]}
+    for word in strings:
+        res.append(str(word))
+    return {"strings":res}
