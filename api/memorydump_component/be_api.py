@@ -48,17 +48,16 @@ def be_search():
 
     return result
 
-
+'''
+The body of the POST request needs to have this layout
+{
+    "keywords" : ["sample1", "sample2", ...],
+}
+'''
 @be_api.route("/strings",methods=["POST"])
 def memdump_search():
 
-    keyword = request.json["keyword"]
-
-    temp = []
+    keywords = request.json["keywords"]
     dump_path = os.environ.get('DUMP_PATH')
-    strings = tfh.strings(dump_path)
 
-    for word in strings:
-        temp.append(str(word))
-
-    return {keyword : tfh.find_matching_strings(temp,keyword)}
+    return tfh.get_kw_dictionary(keywords,dump_path)
