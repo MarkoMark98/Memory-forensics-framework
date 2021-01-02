@@ -1,5 +1,9 @@
 import re
-from mmap import mmap, PROT_READ
+from mmap import mmap
+try:
+    from mmap import PROT_READ as reading_mode
+except ImportError:
+    from mmap import ACCESS_READ as reading_mode
 
 def get_occurence_number(matches):
     '''
@@ -57,7 +61,7 @@ def find_occurrences(path,keywords):
 
 
 def strings(fname, n=6):
-    with open(fname, 'rb') as f, mmap(f.fileno(), 0, prot=PROT_READ) as m:
+    with open(fname, 'rb') as f, mmap(f.fileno(), 0, prot=reading_mode) as m:
         for match in re.finditer(('([\w/]{%s}[\w/]*)' % n).encode(), m):
             yield match.group(0)
     

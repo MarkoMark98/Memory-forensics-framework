@@ -1,6 +1,7 @@
 from flask import Flask, Blueprint, current_app ,request
 from flask_restful import Api, Resource
 import os
+from os import path
 import json
 from tool_handler import pcap_file_handler as pcap
 from tool_handler import txt_file_handler as tfh
@@ -23,11 +24,11 @@ The body of the POST request needs to have this layout
 @be_api.route("",methods=["POST"])
 def be_search():
     #call to bulk estractor to carve files
-    prefix = os.environ.get("BE_OUTPUT_DIR")+"/"
-    dump_path = os.environ.get('DUMP_PATH')
-    destination = os.environ.get("BE_OUTPUT_DIR")
-    command = f"bulk_extractor -o {destination} {dump_path}"
-    #os.system(command)
+    prefix = path.realpath(os.environ.get("BE_OUTPUT_DIR"))+"/"
+    dump_path = path.realpath(os.environ.get('DUMP_PATH'))
+    destination = path.realpath(os.environ.get("BE_OUTPUT_DIR"))
+    command = f"bulk_extractor -o \"{destination}\" \"{dump_path}\""
+    os.system(command)
 
     #result dictionary
     result = {}
