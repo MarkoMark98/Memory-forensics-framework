@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, current_app ,request
 from flask_restful import Api, Resource
 import os
 import json
-from utils import txt_file_handler as tfh
+from tool_handler import txt_file_handler as tfh
 
 pb_api = Blueprint('pb_api', __name__,  static_folder="static")
 

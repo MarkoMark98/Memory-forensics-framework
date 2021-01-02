@@ -2,8 +2,8 @@ from flask import Flask, Blueprint, current_app ,request
 from flask_restful import Api, Resource
 import os
 import json
-from utils import pcap_handler as pcap
-from utils import txt_file_handler as tfh
+from tool_handler import pcap_file_handler as pcap
+from tool_handler import txt_file_handler as tfh
 
 
 be_api = Blueprint('be_api', __name__,  static_folder="static")
@@ -42,10 +42,6 @@ def be_search():
     for key in keys:
         result[key] = tfh.find_occurrences(prefix+key, keywords[key])
     
-    #dealing with packets
-    packets = pcap.read_pcap(prefix+"packets.pcap")
-    result["packets"] = packets
-
     return result
 
 '''
@@ -61,3 +57,11 @@ def memdump_search():
     dump_path = os.environ.get('DUMP_PATH')
 
     return tfh.get_kw_dictionary(keywords,dump_path)
+
+
+@be_api.route("/pcap",methods=["GET"])
+def be_packets():
+    prefix = os.environ.get("BE_OUTPUT_DIR")+"/"
+    #dealing with packets
+    packets = pcap.read_pcap(prefix+"packets.pcap")
+    return {"packets" : packets}
