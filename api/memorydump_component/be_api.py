@@ -28,7 +28,7 @@ def be_search():
     dump_path = path.realpath(os.environ.get('DUMP_PATH'))
     destination = path.realpath(os.environ.get("BE_OUTPUT_DIR"))
     command = f"bulk_extractor -o \"{destination}\" \"{dump_path}\""
-    os.system(command)
+    #os.system(command)
 
     #result dictionary
     result = {}
