@@ -4,7 +4,7 @@ import sys, json, os, response
 from os import path
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../volatility3'))
 import volatility
-from volatility.plugins import windows, mac, linux
+from volatility.plugins import windows, mac, linux, timeliner
 from volatility.plugins.windows import pslist, pstree, filescan, netscan
 from volatility.plugins.mac import pslist, pstree
 from volatility.plugins.linux import pslist, pstree
@@ -65,14 +65,14 @@ def run_plugin(os_name, plugin_name):
             else:
                 final_tree.append(node_dict)
             acc_map[node.path] = node_dict
-
             return (acc_map, final_tree)
 
         if not grid.populated:
             grid.populate(visitor, final_output)
         else:
             grid.visit(node = None, function = visitor, initial_accumulator = final_output)
-            
-        return {'data': final_output[0]}
+
+        result = {key:final_output[0][key] for key in final_output[0] if "|" not in key}
+        return {'data': result}
     else:
         return {'err-message':"Errore nella costruzione del plugin"+os_name+"."+plugin_name+". Controllare di aver inserito un file valido e non corrotto."}
