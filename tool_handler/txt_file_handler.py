@@ -1,4 +1,5 @@
 import re
+from collections import Counter
 from mmap import mmap
 try:
     from mmap import PROT_READ as reading_mode
@@ -16,14 +17,14 @@ def get_occurence_number(matches):
 
     result = {}
     for num, keyword in matches:
-        result[keyword] = num
+        result[keyword] = int(num)
     
     return result
 
 def find_matching_strings(strings,keyword):
 
     regex = rf"[^\s]*{keyword}[^\s]*"
-    pattern = re.compile(regex)
+    pattern = re.compile(regex,re.IGNORECASE)
 
     res = []
 
@@ -44,7 +45,7 @@ def find_occurrences(path,keywords):
 
         regex = rf"n=([0-9]+)\s*([^\s]*{keyword}[^\s]*)"
     
-        pattern = re.compile(regex)
+        pattern = re.compile(regex,re.IGNORECASE)
 
         total = []
         with open(path,"r") as fh:
@@ -58,6 +59,24 @@ def find_occurrences(path,keywords):
 
     return result
 
+
+def find_occurrences_alt(path, keywords):
+    #return {"test":"to implement"}
+    res = {}
+    for kw in keywords:
+        temp = []
+        regex = rf"{kw}"
+        pattern = re.compile(regex,re.IGNORECASE)
+
+        with open(path,"r") as fh:
+            for line in fh:
+                match = re.search(pattern,line)
+                if match != None and line[0] != "#":
+                    temp.append(line)
+
+        res[kw] = Counter(temp)
+        
+    return res
 
 
 def strings(fname, n=6):

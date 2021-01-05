@@ -6,6 +6,15 @@ import json
 from tool_handler import pcap_file_handler as pcap
 from tool_handler import txt_file_handler as tfh
 
+names = set([
+    "domain_histogram.txt",
+    "email_histogram.txt" ,
+    "email_domain_histogram.txt" ,
+    "ip_histogram.txt" ,
+    "url_histogram.txt",
+    "url_services.txt"
+    ]
+    )
 
 be_api = Blueprint('be_api', __name__,  static_folder="static")
 
@@ -41,7 +50,10 @@ def be_search():
     keys = keywords.keys()
     #fills dictionary with
     for key in keys:
-        result[key] = tfh.find_occurrences(prefix+key, keywords[key])
+        if key in names:
+            result[key] = tfh.find_occurrences(prefix+key, keywords[key])
+        else:
+            result[key] = tfh.find_occurrences_alt(prefix+key, keywords[key])
     
     return result
 
