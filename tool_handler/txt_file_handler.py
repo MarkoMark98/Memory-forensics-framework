@@ -27,12 +27,16 @@ def find_matching_strings(strings,keyword):
     regex = rf"[^\s]*{keyword}[^\s]*"
     pattern = re.compile(regex,re.IGNORECASE)
 
-    res = []
+    res = {}
 
     for string in strings:
         matches = re.findall(pattern,string)
         if matches != None:
-            res = res + matches
+            for match in matches:
+                if res.get(match):
+                    res[match] +=1
+                else:
+                    res[match] = 1
             
     return res
 
@@ -80,17 +84,22 @@ def find_occurrences_alt(path, keywords):
     return res
 
 
-def strings(fname, n=6):
-    with open(fname, 'rb') as f, mmap(f.fileno(), 0, prot=reading_mode) as m:
-        for match in re.finditer(('([\w/]{%s}[\w/]*)' % n).encode(), m):
-            yield match.group(0)
-    
+def strings(fname, kw, n=6):
+    try:
+        with open(pt.realpath(fname), 'rb') as f, mmap(f.fileno(), 0, prot=reading_mode) as m:
+            for match in re.finditer(('([\w/]{%s}[\w/]*)' % n).encode(), m):
+                yield match.group(0)
+    except:
+        with open(pt.realpath(fname), 'rb') as f, mmap(f.fileno(), 0, access=reading_mode) as m:
+            for match in re.finditer(('([\w/]{%s}[\w/]*)' % n).encode(), m):
+                yield match.group(0)
+            
     
 
 def get_kw_dictionary(keywords,file_path):
     
     temp = []
-    words = strings(file_path)
+    words = strings(file_path, keywords)
 
     for word in words:
         temp.append(str(word,encoding="utf-8"))
