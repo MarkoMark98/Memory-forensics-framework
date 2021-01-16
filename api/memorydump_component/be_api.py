@@ -33,10 +33,10 @@ The body of the POST request needs to have this layout
 @be_api.route("",methods=["POST"])
 def be_search():
     #call to bulk estractor to carve files
-    prefix = path.realpath(os.environ.get("BE_OUTPUT_DIR"))+"/"
+    prefix = os.environ.get("BE_OUTPUT_DIR")+"/"
     dump_path = path.realpath(os.environ.get('DUMP_PATH'))
     destination = path.realpath(os.environ.get("BE_OUTPUT_DIR"))
-    command = f"bulk_extractor -o \"{destination}\" \"{dump_path}\""
+    command = f"bulk_extractor -o \"{destination}\" \"{dump_path}\"" 
     #os.system(command)
 
     #result dictionary
@@ -46,11 +46,11 @@ def be_search():
     #the keywords must be equal to teh file names
     keywords = request.json
     
-    #gtting key names
+    #gtting key names 
     keys = keywords.keys()
     #fills dictionary with
     for key in keys:
-        if key in names:
+        if key in names: 
             result[key] = tfh.find_occurrences(prefix+key, keywords[key])
         else:
             result[key] = tfh.find_occurrences_alt(prefix+key, keywords[key])
@@ -64,7 +64,7 @@ The body of the POST request needs to have this layout
 }
 '''
 @be_api.route("/strings",methods=["POST"])
-def memdump_search():
+def memdump_search(): 
 
     keywords = request.json["keywords"]
     dump_path = os.environ.get('DUMP_PATH')

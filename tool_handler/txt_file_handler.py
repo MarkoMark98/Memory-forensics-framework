@@ -1,6 +1,7 @@
 import re
 from collections import Counter
 from mmap import mmap
+from os import path as pt
 try:
     from mmap import PROT_READ as reading_mode
 except ImportError:
@@ -48,7 +49,7 @@ def find_occurrences(path,keywords):
         pattern = re.compile(regex,re.IGNORECASE)
 
         total = []
-        with open(path,"r") as fh:
+        with open(pt.realpath(path),"r") as fh:
             for line in fh:
                 
                 matches = re.search(regex,line)
