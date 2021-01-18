@@ -32,3 +32,16 @@ def read_pcap(path):
             res.append(curr)
 
         return res
+
+def count_matches(packets, ips):
+    ip_list = list(map(lambda pc: (pc["from"],pc["to"]),packets))
+    #print(list(ip_list))
+    res = {}
+    for ip in ips:
+        num = 0
+        for fro,to in ip_list:
+            if ip == fro or ip == to:
+                num+=1
+        res[ip] = num
+    
+    return res

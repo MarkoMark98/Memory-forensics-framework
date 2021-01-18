@@ -27,7 +27,8 @@ The body of the POST request needs to have this layout
     "ip_histogram.txt" : ["sample5",...],
     "rfc822.txt" : ["sample6",...],
     "url_histogram.txt" : ["sample7",...],
-    "url_services.txt" : ["sample8",...]
+    "url_services.txt" : ["sample8",...],
+    "packets" : [ip1,ip2,ip3,...]
 }
 '''
 @be_api.route("",methods=["POST"])
@@ -39,6 +40,9 @@ def be_search():
     command = f"bulk_extractor -o \"{destination}\" \"{dump_path}\"" 
     #os.system(command)
 
+    #extracted packets
+    packets = pcap.read_pcap(prefix+"packets.pcap")
+
     #result dictionary
     result = {}
 
@@ -46,16 +50,24 @@ def be_search():
     #the keywords must be equal to teh file names
     keywords = request.json
     
+    temp = {}
     #gtting key names 
     keys = keywords.keys()
     #fills dictionary with
     for key in keys:
         if key in names: 
-            result[key] = tfh.find_occurrences(prefix+key, keywords[key])
+            temp[key] = tfh.find_occurrences(prefix+key, keywords[key])
+        elif key == "packets":
+            pass
         else:
-            result[key] = tfh.find_occurrences_alt(prefix+key, keywords[key])
+            temp[key] = tfh.find_occurrences_alt(prefix+key, keywords[key])
     
+    
+    result["packets_matches"]=pcap.count_matches(packets,keywords["packets"])
+    result["keywords_matches"]= tfh.rearrange_result(temp)
     return result
+
+
 
 '''
 The body of the POST request needs to have this layout
@@ -71,10 +83,11 @@ def memdump_search():
 
     return tfh.get_kw_dictionary(keywords,dump_path)
 
-
+'''
 @be_api.route("/pcap",methods=["GET"])
 def be_packets():
     prefix = os.environ.get("BE_OUTPUT_DIR")+"/"
     #dealing with packets
     packets = pcap.read_pcap(prefix+"packets.pcap")
     return {"packets" : packets}
+'''

@@ -109,3 +109,28 @@ def get_kw_dictionary(keywords,file_path):
         result[keyword] = find_matching_strings(temp,keyword)
 
     return result
+
+def rearrange_result(dict):
+
+    res = {}
+    for fh in dict:
+        for keyword in dict[fh]:
+            l = None 
+            try:
+                l = res[keyword]
+            except:
+                l = []
+                res[keyword] = l
+
+            for match in dict[fh][keyword]:
+                
+                occ = dict[fh][keyword][match]
+                
+                l.append({
+                    "match":match,
+                    "occurrences" : occ,
+                    "file" : fh
+                })
+                
+
+    return res
