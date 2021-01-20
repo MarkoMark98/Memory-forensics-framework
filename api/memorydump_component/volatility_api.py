@@ -1,5 +1,6 @@
 from flask import Flask, Blueprint, current_app
 from flask_restful import Api, Resource
+from flask_cors import cross_origin
 import sys, json, os, response
 from os import path
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../volatility3'))
@@ -21,6 +22,7 @@ with open(path.realpath(os.path.join(os.path.dirname(__file__), 'volatility_plug
 
 
 @volatility_api.route("/<os_name>/<plugin_name>")
+@cross_origin()
 def run_plugin(os_name, plugin_name):
     
     dump_path = os.environ.get("DUMP_PATH")

@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 import json
 from os import path
 from dotenv import load_dotenv
@@ -6,6 +7,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 ctx =  app.app_context()
 ctx.push()
 

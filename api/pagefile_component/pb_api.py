@@ -1,5 +1,6 @@
 from flask import Flask, Blueprint, current_app ,request
 from flask_restful import Api, Resource
+from flask_cors import cross_origin
 import os
 import json
 from tool_handler import txt_file_handler as tfh
@@ -13,6 +14,7 @@ The body of the POST request needs to have this layout
 }
 '''
 @pb_api.route("/strings",methods = ["POST"])
+@cross_origin()
 def pagefile_search():
 
     keywords = request.json["keywords"]

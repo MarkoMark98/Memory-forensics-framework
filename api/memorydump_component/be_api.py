@@ -1,5 +1,6 @@
 from flask import Flask, Blueprint, current_app ,request
 from flask_restful import Api, Resource
+from flask_cors import cross_origin
 import os
 from os import path
 import json
@@ -32,6 +33,7 @@ The body of the POST request needs to have this layout
 }
 '''
 @be_api.route("",methods=["POST"])
+@cross_origin()
 def be_search():
     #call to bulk estractor to carve files
     prefix = os.environ.get("BE_OUTPUT_DIR")+"/"
