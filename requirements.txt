@@ -4,6 +4,7 @@ chardet==3.0.4
 click==7.1.2
 cycler==0.10.0
 Flask==1.1.2
+Flask-Cors==3.0.10
 Flask-RESTful==0.3.8
 Flask-SQLAlchemy==2.4.3
 idna==2.10
@@ -29,4 +30,3 @@ urllib3==1.26.2
 Werkzeug==1.0.1
 yara==1.7.7
 yara-python==4.0.2
-flask-cors --install-option='-U'

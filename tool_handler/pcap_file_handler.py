@@ -4,6 +4,7 @@ from pcapfile.protocols.linklayer import ethernet
 from pcapfile.protocols.network import ip
 import binascii
 import re
+from collections import Counter
 
 def get_ips(pkt):
     regex = r"[0-9a-zA-Z\s]* b'([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})' [0-9a-zA-Z\s]* b'([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})' [\w\s]*"
@@ -38,10 +39,15 @@ def count_matches(packets, ips):
     #print(list(ip_list))
     res = {}
     for ip in ips:
-        num = 0
+        l=[]
         for fro,to in ip_list:
-            if ip == fro or ip == to:
-                num+=1
-        res[ip] = num
+            
+            if ip == fro or fro.startswith(ip):
+                l.append(fro)
+            elif ip == to or to.startswith(ip):
+                l.append(to)
+
+        
+        res[ip] = Counter(l)
     
     return res

@@ -44,7 +44,7 @@ def be_search():
 
     #extracted packets
     packets = pcap.read_pcap(prefix+"packets.pcap")
-
+    
     #result dictionary
     result = {}
 
