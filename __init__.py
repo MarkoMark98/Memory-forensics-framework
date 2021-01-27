@@ -14,11 +14,13 @@ ctx.push()
 
 from api.memorydump_component.volatility_api import volatility_api
 from api.memorydump_component.be_api import be_api
-from api.pagefile_component.pagefile_api import pagefile_api
+from api.memorydump_component.memdump_grep_api import memdump_grep_api
+from api.pagefile_component.pagefile_grep_api import pagefile_grep_api
 
-app.register_blueprint(volatility_api, url_prefix = "/volatility")
-app.register_blueprint(be_api,url_prefix = "/be")
-app.register_blueprint(pagefile_api,url_prefix = "/pagefile")
+app.register_blueprint(volatility_api, url_prefix = "/volatility") #volatility api
+app.register_blueprint(be_api,url_prefix = "/be") #bulk extractor api
+app.register_blueprint(memdump_grep_api,url_prefix = "/memdump") #memdump grep api
+app.register_blueprint(pagefile_grep_api,url_prefix = "/pagefile") #pagefile grep api
 
 if __name__ == '__main__':
     app.run(debug = True)

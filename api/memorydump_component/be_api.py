@@ -69,22 +69,6 @@ def be_search():
     result["keywords_matches"]= tfh.rearrange_result(temp)
     return result
 
-
-
-'''
-The body of the POST request needs to have this layout
-{
-    "keywords" : ["sample1", "sample2", ...],
-}
-'''
-@be_api.route("/strings",methods=["POST"])
-def memdump_search(): 
-
-    keywords = request.json["keywords"]
-    dump_path = os.environ.get('DUMP_PATH')
-
-    return tfh.get_kw_dictionary(keywords,dump_path)
-
 '''
 @be_api.route("/pcap",methods=["GET"])
 def be_packets():
