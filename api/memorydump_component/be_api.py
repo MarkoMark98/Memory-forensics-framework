@@ -39,8 +39,9 @@ def be_search():
     prefix = os.environ.get("BE_OUTPUT_DIR")+"/"
     dump_path = path.realpath(os.environ.get('DUMP_PATH'))
     destination = path.realpath(os.environ.get("BE_OUTPUT_DIR"))
-    command = f"bulk_extractor -o \"{destination}\" \"{dump_path}\"" 
-    #os.system(command)
+    command = f"bulk_extractor -o \"{destination}\" \"{dump_path}\""
+    if(not path.exists(destination)):
+        os.system(command)
 
     #extracted packets
     packets = pcap.read_pcap(prefix+"packets.pcap")
