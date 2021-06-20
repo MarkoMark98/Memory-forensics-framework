@@ -1,4 +1,4 @@
-import re
+import re, sys
 from collections import Counter
 from mmap import mmap
 from os import path as pt
@@ -73,7 +73,7 @@ def find_occurrences_alt(path, keywords):
         regex = rf"{kw}"
         pattern = re.compile(regex,re.IGNORECASE)
 
-        with open(path,"r") as fh:
+        with open(path,"r", encoding="utf-8") as fh:
             for line in fh:
                 match = re.search(pattern,line)
                 if match != None and line[0] != "#":

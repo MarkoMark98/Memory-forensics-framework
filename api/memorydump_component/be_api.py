@@ -3,7 +3,7 @@ from flask_restful import Api, Resource
 from flask_cors import cross_origin
 import os
 from os import path
-import json
+import json, sys
 from tool_handler import pcap_file_handler as pcap
 from tool_handler import txt_file_handler as tfh
 
@@ -52,7 +52,7 @@ def be_search():
     #Getting keywords from request body
     #the keywords must be equal to teh file names
     keywords = request.json
-    
+    print(keywords, file = sys.stderr) 
     temp = {}
     #gtting key names 
     keys = keywords.keys()
