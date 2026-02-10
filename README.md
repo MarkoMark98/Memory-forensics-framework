@@ -36,7 +36,7 @@ Il progetto è stato sviluppato come **tesi di laurea triennale in Informatica**
 MemSqueezer è composto da due parti principali:
 
 - **Server (backend)** in Python/Flask.
-- **Client (frontend)** in Dart/Flutter (applicazione web).
+- **Client (frontend)** in Dart/Flutter presente in una repository separata al seguente link: https://github.com/MarkoMark98/MemSqueezer_Frontend
 
 ### Server
 
