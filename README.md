@@ -1,154 +1,183 @@
 # MemSqueezer – Memory & Browser Forensics Framework
 
-MemSqueezer è un **framework web-based** per l’analisi forense della memoria (Memory Forensics) e del browser, progettato come supporto alle indagini digitali su sistemi Windows. Il progetto incapsula e orchestra diversi tool esistenti (Volatility e Bulk Extractor) esponendoli tramite REST API e fornendo una interfaccia web intuitiva per l’analisi di memory dump e file di paging (`pagefile.sys`).
+MemSqueezer è un **framework web-based** per l’analisi forense della memoria (Memory Forensics) e del browser, progettato come supporto alle indagini digitali su sistemi Windows. Il progetto incapsula e orchestra tool esistenti (Volatility e Bulk Extractor) esponendoli tramite REST API e fornendo una interfaccia web intuitiva per l’analisi di memory dump e file di paging (`pagefile.sys`).
+
+## Obiettivi del progetto
+
+- Semplificare i processi di **Memory Forensics** e **Browser Forensics**.
+- Rendere più veloce e intuitiva l’analisi delle immagini di memoria e del file di paging.
+- Fornire a un investigatore forense uno strumento unico che:
+  - Colleghi più tool forensi.
+  - Centralizzi l’esecuzione e la visualizzazione dei risultati.
+  - Supporti la ricostruzione delle attività svolte su un computer.
+
+Il progetto è stato sviluppato come **tesi di laurea triennale in Informatica** presso l’Università degli Studi di Salerno (a.a. 2020–2021).
 
 ## Caratteristiche principali
 
-- Architettura **client–server** basata su REST API HTTP e formato JSON.
+- Architettura **client–server** basata su:
+  - REST API HTTP.
+  - Formato di scambio dati JSON.
 - Analisi di:
-  - Memory dump (es. file `.mem`).
+  - Memory dump (file `.mem`).
   - File di paging `pagefile.sys`.
 - Integrazione con tool di Memory Forensics:
   - **Volatility** (plugin: `pslist`, `pstree`, `netscan`, `filescan`, `timeliner`).
   - **Bulk Extractor** (estrazione di URL, domini, e‑mail, header, indirizzi IP, ecc.).
-- Motore di ricerca interno basato su **keyword** ed **espressioni regolari**, che simula il comportamento dei comandi `strings` e `grep` dei sistemi Unix-like.
-- Analisi congiunta di dump e pagefile per massimizzare le evidenze disponibili.
+- Motore di ricerca interno basato su:
+  - **Keyword**.
+  - **Espressioni regolari**.
 - Presentazione dei risultati tramite:
-  - Tabelle testuali (processi, file aperti, connessioni di rete, timeline).
-  - Grafici riassuntivi (domini, URL, e‑mail, header, indirizzi IP, risultati di `grep`).
-- Pensato per supportare un investigatore forense nella ricostruzione delle attività di un utente (ad esempio uso di Tor Browser e accesso al Deep Web).
+  - Tabelle (processi, file aperti, connessioni di rete, timeline).
+  - Grafici (domini, URL, e‑mail, header, indirizzi IP, risultati di ricerche sul dump/pagefile).
 
 ## Architettura
 
-MemSqueezer è composto da due macro-componenti: **server** (backend) e **client** (frontend).
+MemSqueezer è composto da due parti principali:
+
+- **Server (backend)** in Python/Flask.
+- **Client (frontend)** in Dart/Flutter (applicazione web).
 
 ### Server
 
-Il backend è implementato in **Python** con **Flask** ed espone una serie di REST API che orchestrano i tool forensi.
+Il backend espone una serie di endpoint REST che orchestrano l’esecuzione dei tool di Memory Forensics e processano i risultati.
 
-Il server è suddiviso in due componenti principali:
+Componenti principali:
 
 - **Memdump Component**
   - Modulo `Dump Analysis`:
     - `Volatility_interface`: invoca Volatility e i plugin `pslist`, `pstree`, `timeliner`, `filescan`, `netscan`, restituendo un JSON per ciascun plugin.
     - `BulkExtractor_interface`: esegue Bulk Extractor da linea di comando, producendo file `PCAP` e file `TXT`.
-    - `Grep_interface`: ricerca match sul dump tramite keyword/regex, restituendo un JSON con tutti i risultati.
+    - `Grep_interface`: ricerca match nel dump tramite keyword ed espressioni regolari, simulando `strings`/`grep`, con output JSON.
   - Modulo `Tool Handler`:
-    - `Pcap_file_handler`: elabora il file `.pcap` prodotto da Bulk Extractor e lo converte in JSON.
-    - `Txt_file_handler`: elabora i vari `.txt` prodotti da Bulk Extractor e li converte in JSON.
+    - `Pcap_file_handler`: gestisce il file `.pcap` prodotto da Bulk Extractor e lo trasforma in JSON.
+    - `Txt_file_handler`: gestisce i file `.txt` prodotti da Bulk Extractor e li trasforma in JSON.
 
 - **Pagefile Component**
   - Modulo `Pagefile Analysis`:
-    - `Grep_interface`: analisi keyword/regex sul file di paging, con output JSON dei match.
+    - `Grep_interface`: ricerca match nel `pagefile.sys` tramite keyword/regex, con output JSON.
 
-Tutti gli output vengono inviati al client che si occupa della visualizzazione nell’interfaccia web.
+I JSON generati vengono inviati al client, che si occupa della visualizzazione.
 
 ### Client
 
-Il frontend è sviluppato in **Dart** utilizzando il framework **Flutter** in modalità web.
+Il frontend è una web app sviluppata con Flutter, strutturata in moduli:
 
-Struttura logica lato client:
-
-- `models/`: classi che rappresentano le entità di dominio e i dati ricevuti dal server (processi, file, connessioni, match, ecc.).
-- `screens/`: pagine principali dell’applicazione:
+- `models/` – classi che rappresentano i dati forniti dal server (processi, file, connessioni, match, ecc.).
+- `screens/` – schermate principali:
   - **HomePage** (`/home`): pagina iniziale del framework.
-  - **FormSubmit** (`/form`): form per inserire sistema operativo, keyword e indirizzi IP per l’analisi.
-  - **LoadingPage** (`/loadingPage`): pagina di caricamento che mostra lo stato delle analisi in corso.
-  - **ResultPage** (`/resultPage`): pagina di visualizzazione dei risultati (tabelle + grafici).
-- `widgets/`: componenti UI riutilizzabili (widget custom).
-- `services/`: classi che implementano le chiamate HTTP verso il backend.
-- `utils/`: helper e utility per la UI.
-- `main.dart`: entry point dell’applicazione Flutter.
+  - **FormSubmit** (`/form`): form per inserire sistema operativo, keyword e indirizzi IP.
+  - **LoadingPage** (`/loadingPage`): pagina di caricamento che mostra lo stato delle analisi.
+  - **ResultPage** (`/resultPage`): pagina che organizza e visualizza i risultati (tabelle + grafici).
+- `widgets/` – widget UI riutilizzabili.
+- `services/` – classi per le richieste HTTP verso il backend.
+- `utils/` – helper e funzioni di supporto alla UI.
+- `main.dart` – entry point dell’applicazione Flutter.
 
 ## Tecnologie utilizzate
 
 ### Backend
 
-- **Python**:
-  - Linguaggio principale del server.
-  - Semplice nella manipolazione di JSON e con un ampio ecosistema di librerie.
-- **Flask**:
-  - Micro-framework web leggero e flessibile.
+- **Python**
+  - Linguaggio dinamico, orientato agli oggetti.
+  - Semplifica la manipolazione di JSON e l’integrazione con librerie esterne.
+- **Flask**
+  - Micro-framework web open source.
   - Basato su WSGI (Web Server Gateway Interface).
-  - Ottimo per routing, REST API, testing e debug.
+  - Leggero, flessibile, adatto alla creazione di REST API.
 
 ### Tool di Memory Forensics
 
-- **Volatility** (v3):
-  - Preinstallato in Kali Linux.
-  - Utilizzabile sia da CLI che come libreria Python.
-  - Plugin usati: `pslist`, `pstree`, `netscan`, `filescan`, `timeliner`.
-- **Bulk Extractor**:
-  - Analizza immagini di disco, file e directory indipendentemente dal file system.
-  - Estrae numeri di carte di credito, e‑mail, URL, ricerche, header, IP, ecc.
+- **Volatility (v3)**
+  - Framework multipiattaforma open source.
+  - Plugin usati:
+    - `pslist` – lista dei processi in esecuzione al momento del dump.
+    - `pstree` – albero dei processi.
+    - `netscan` – lista delle connessioni di rete.
+    - `filescan` – lista dei file aperti.
+    - `timeliner` – timeline combinata di processi e connessioni.
+- **Bulk Extractor**
+  - Strumento per analizzare immagini di disco, file o directory.
+  - Indipendente dal file system.
+  - Estrae numeri di carte di credito, indirizzi e‑mail, URL, ricerche online, header, indirizzi IP.
 
 ### Frontend
 
-- **Dart**:
+- **Dart**
   - Linguaggio object-oriented sviluppato da Google.
-  - Sintassi vicina a C/Java/Swift, compilabile in JavaScript.
-- **Flutter**:
+  - Sintassi simile a C/Java.
+  - Supporto a costrutti dedicati (es. costruttori `ClassName.fromJson`).
+- **Flutter**
   - Framework UI multipiattaforma open source.
-  - Rendering ad alte prestazioni tramite Skia.
-  - Widget personalizzati per costruire la UI web, con design minimal e user‑friendly.
+  - Usa il motore grafico Skia.
+  - Basato su widget altamente personalizzabili per la creazione di interfacce moderne e responsive.
 
 ## Funzionalità principali
 
 - Analisi di memory dump e pagefile:
-  - Estrazione di processi in esecuzione, gerarchie di processi, file aperti, connessioni di rete.
-  - Generazione di timeline temporali combinate processi/connessioni.
+  - Processi in esecuzione.
+  - Gerarchie di processi.
+  - File aperti.
+  - Connessioni di rete.
+  - Timeline con eventi ordinati per data/ora.
 - Ricerca per keyword:
-  - Supporto a keyword semplici (es. `system`, `.dll`, `tcp`).
-  - Utilizzo del simbolo `$` per forzare il match esatto evitando sottostringhe (es. `$system`).
-  - Supporto per espressioni regolari configurate lato server.
-- Analisi protocolli e rete:
-  - Individuazione di connessioni `TCP` e `UDP` collegate a processi specifici (es. `tor.exe`).
-- Analisi Deep Web / Tor:
-  - Identificazione di attività riconducibili a Tor Browser (processi `firefox.exe` + `tor.exe`).
-  - Rilevamento di domini `.onion`, URL contenenti keyword legate a Tor/Deep Web (`torproject`, `onion`, `duckduckgo`, ecc.).
-  - Supporto alla correlazione con strumenti esterni (es. database di nodi Tor).
+  - Supporto a keyword semplici (es. `system`, `.dll`, `tcp`, `udp`).
+  - Uso del simbolo `$` per forzare il match esatto della stringa (es. `$system` per evitare match parziali).
+  - Ricerca tramite espressioni regolari configurate lato server.
+- Integrazione con scenari reali:
+  - Analisi di utilizzo di Tor Browser e Deep Web (processi `firefox.exe`/`tor.exe`, domini `.onion`, attività su `duckduckgo`, ecc.).
+  - Individuazione di pattern sospetti nelle connessioni di rete e nei log.
 
-## Esempio di utilizzo (scenario d’indagine)
+## Esempio di scenario d’uso
 
-Un tipico scenario d’uso è il seguente:
+Un esempio di impiego del framework:
 
-1. Un sospettato utilizza Tor Browser per accedere a siti del Deep Web.
-2. L’investigatore acquisisce un dump di memoria e il file di paging tramite strumenti come FTK Imager.
+1. Un sospettato utilizza **Tor Browser** per accedere a siti del Deep Web.
+2. Un investigatore forense acquisisce:
+   - Un memory dump del sistema.
+   - Il file di paging (`pagefile.sys`), ad esempio tramite FTK Imager.
 3. I file vengono messi a disposizione del server MemSqueezer.
-4. Tramite l’interfaccia web, l’investigatore inserisce keyword come:
-
-   ```text
-   tor; torproject; @torproject; onion; firefox; mozilla; duckduckgo; ftk;
-   ```
-
-5. MemSqueezer:
-   - Mostra processi `firefox.exe` e `tor.exe`.
-   - Evidenzia connessioni di rete TCP appartenenti a `tor.exe`.
-   - Elenca file aperti relativi ai binari di Tor Browser e agli strumenti di acquisizione.
-   - Mostra grafici con i match delle keyword in domini, URL, e‑mail, header, indirizzi IP e risultati di `grep`.
-
-Questo consente di ricostruire in modo guidato la sequenza delle attività sul sistema analizzato.
+4. Tramite la pagina **FormSubmit**, l’investigatore inserisce:
+   - Sistema operativo target (es. Windows).
+   - Keyword come:
+     ```text
+     tor; torproject; @torproject; onion; firefox; mozilla; duckduckgo; ftk;
+     ```
+   - Eventuali indirizzi IP di interesse.
+5. Il framework:
+   - Mostra i processi `firefox.exe` e `tor.exe`.
+   - Evidenzia connessioni di rete attribuite a `tor.exe`.
+   - Elenca file e directory legate all’installazione di Tor Browser.
+   - Visualizza grafici con la distribuzione di domini, URL, e‑mail, header e indirizzi IP correlati alle keyword.
+6. L’investigatore utilizza tabelle e grafici per:
+   - Ricostruire la sequenza temporale delle azioni.
+   - Collegare l’uso di Tor Browser a specifici eventi di rete e URL visitati.
+   - Estrarre evidenze utilizzabili in sede giudiziaria.
 
 ## Limitazioni note
 
-- Non è ancora previsto l’upload dei file (dump e pagefile) tramite interfaccia web:
-  - I file devono essere gestiti e configurati lato server (percorsi locali).
-  - Questa scelta è legata alla dimensione potenzialmente molto elevata dei dump.
-- La lista completa dei match per ogni keyword è gestita internamente ma non è ancora esposta in una vista dedicata nella UI.
-- I tempi di analisi dipendono dalla dimensione del dump e dalle risorse hardware:
-  - Dump più grandi implicano tempi di esecuzione più lunghi, in particolare per la fase di `grep`.
+- Caricamento dei file:
+  - Non è previsto l’upload diretto di memory dump e pagefile tramite interfaccia web.
+  - La gestione dei file avviene tramite percorsi configurati lato server.
+- Visualizzazione dei match:
+  - Il framework mantiene la lista completa dei match per ogni keyword, ma nella versione attuale la UI non espone una vista dettagliata di tutti i singoli match.
+- Tempi di esecuzione:
+  - Crescono all’aumentare della dimensione del dump (ad esempio una differenza significativa tra 2 GB e 4 GB).
+  - La fase più costosa è l’esecuzione delle ricerche sul dump (grep/regex).
+  - Le performance dipendono anche dall’hardware della macchina che esegue il framework.
 
-## Setup e avvio
-
-> Nota: i comandi seguenti sono indicativi e possono variare in base alla struttura effettiva del repository e ai nomi dei file/script.
+## Setup e avvio (linee guida generali)
 
 ### Requisiti
 
-- Sistema operativo Linux o Windows.
-- Python 3.x.
-- Flutter SDK + Dart SDK.
-- Volatility (v3) installato e raggiungibile da riga di comando.
-- Bulk Extractor installato e raggiungibile da riga di comando.
+- Sistema operativo in grado di eseguire:
+  - Python 3.x.
+  - Dart/Flutter.
+  - Volatility.
+  - Bulk Extractor.
+- Accesso ai file:
+  - Memory dump (`.mem`).
+  - File di paging (`pagefile.sys`).
 
 ### Backend (server)
 
@@ -180,9 +209,9 @@ flutter pub get
 flutter run -d chrome
 ```
 
-Una volta avviati backend e frontend, il framework sarà raggiungibile all’indirizzo locale indicato da Flutter (ad esempio `http://localhost:xxxx`).
+Una volta avviati backend e frontend, il framework è raggiungibile all’indirizzo locale indicato da Flutter (esempio: `http://localhost:xxxx`).
 
-## Struttura del repository (indicativa)
+## Struttura del repository (esempio)
 
 ```text
 Memory-forensics-framework/
@@ -204,10 +233,11 @@ Memory-forensics-framework/
     └── ...
 ```
 
-## Stato del progetto
+## Stato del progetto e licenza
 
-MemSqueezer nasce come progetto di **tesi di laurea triennale in Informatica** presso l’Università degli Studi di Salerno (a.a. 2020–2021). È da considerarsi un prototipo avanzato a scopo didattico e di ricerca, non un prodotto pronto per l’uso in produzione senza ulteriori verifiche, hardening e manutenzione.
+MemSqueezer nasce come progetto di **tesi di laurea triennale in Informatica** e rappresenta un prototipo avanzato a scopo didattico e di ricerca. Non è pensato come prodotto pronto per l’uso in ambienti di produzione senza ulteriori attività di hardening, test e manutenzione.
 
-## Licenza
+Al momento questo repository **non ha una licenza esplicita**: tutti i diritti sul codice e sulla documentazione sono riservati all’autore.
 
-Al momento questo repository **non ha una licenza esplicita**. Tutti i diritti sono riservati all’autore. Se desideri che altri possano utilizzare, modificare o distribuire il codice, valuta in futuro l’aggiunta di un file `LICENSE` con una licenza open source a tua scelta (ad esempio MIT, GPL, Apache, ecc.).
+L’uso del software e delle tecniche descritte è inteso **esclusivamente per scopi leciti, di studio e di laboratorio**.  
+L’analisi forense deve essere svolta solo su sistemi per i quali si dispone di autorizzazione.
