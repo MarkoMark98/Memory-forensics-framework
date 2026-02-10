@@ -120,3 +120,94 @@ Un tipico scenario d’uso è il seguente:
    ```text
    tor; torproject; @torproject; onion; firefox; mozilla; duckduckgo; ftk;
    ```
+
+5. MemSqueezer:
+   - Mostra processi `firefox.exe` e `tor.exe`.
+   - Evidenzia connessioni di rete TCP appartenenti a `tor.exe`.
+   - Elenca file aperti relativi ai binari di Tor Browser e agli strumenti di acquisizione.
+   - Mostra grafici con i match delle keyword in domini, URL, e‑mail, header, indirizzi IP e risultati di `grep`.
+
+Questo consente di ricostruire in modo guidato la sequenza delle attività sul sistema analizzato.
+
+## Limitazioni note
+
+- Non è ancora previsto l’upload dei file (dump e pagefile) tramite interfaccia web:
+  - I file devono essere gestiti e configurati lato server (percorsi locali).
+  - Questa scelta è legata alla dimensione potenzialmente molto elevata dei dump.
+- La lista completa dei match per ogni keyword è gestita internamente ma non è ancora esposta in una vista dedicata nella UI.
+- I tempi di analisi dipendono dalla dimensione del dump e dalle risorse hardware:
+  - Dump più grandi implicano tempi di esecuzione più lunghi, in particolare per la fase di `grep`.
+
+## Setup e avvio
+
+> Nota: i comandi seguenti sono indicativi e possono variare in base alla struttura effettiva del repository e ai nomi dei file/script.
+
+### Requisiti
+
+- Sistema operativo Linux o Windows.
+- Python 3.x.
+- Flutter SDK + Dart SDK.
+- Volatility (v3) installato e raggiungibile da riga di comando.
+- Bulk Extractor installato e raggiungibile da riga di comando.
+
+### Backend (server)
+
+```bash
+# Clona il repository
+git clone https://github.com/MarkoMark98/Memory-forensics-framework.git
+cd Memory-forensics-framework/server
+
+# (Opzionale) crea e attiva un virtualenv
+python3 -m venv venv
+source venv/bin/activate   # su Windows: venv\Scripts\activate
+
+# Installa le dipendenze Python
+pip install -r requirements.txt
+
+# Avvia il server Flask
+python app.py
+```
+
+### Frontend (client)
+
+```bash
+cd ../client
+
+# Recupera le dipendenze Dart/Flutter
+flutter pub get
+
+# Avvia la versione web in modalità sviluppo
+flutter run -d chrome
+```
+
+Una volta avviati backend e frontend, il framework sarà raggiungibile all’indirizzo locale indicato da Flutter (ad esempio `http://localhost:xxxx`).
+
+## Struttura del repository (indicativa)
+
+```text
+Memory-forensics-framework/
+├── server/
+│   ├── app.py
+│   ├── requirements.txt
+│   ├── modules/
+│   │   ├── dump_analysis/
+│   │   ├── pagefile_analysis/
+│   │   └── tool_handler/
+│   └── ...
+└── client/
+    ├── lib/
+    │   ├── models/
+    │   ├── screens/
+    │   ├── widgets/
+    │   ├── services/
+    │   └── utils/
+    └── ...
+```
+
+## Stato del progetto
+
+MemSqueezer nasce come progetto di **tesi di laurea triennale in Informatica** presso l’Università degli Studi di Salerno (a.a. 2020–2021). È da considerarsi un prototipo avanzato a scopo didattico e di ricerca, non un prodotto pronto per l’uso in produzione senza ulteriori verifiche, hardening e manutenzione.
+
+## Licenza
+
+Al momento questo repository **non ha una licenza esplicita**. Tutti i diritti sono riservati all’autore. Se desideri che altri possano utilizzare, modificare o distribuire il codice, valuta in futuro l’aggiunta di un file `LICENSE` con una licenza open source a tua scelta (ad esempio MIT, GPL, Apache, ecc.).
